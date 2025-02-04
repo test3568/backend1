@@ -79,33 +79,44 @@ def consume_messages():
         consumer.close()
 
 
-def process_new_polygon(message):
+def geojson_from_message(message) -> dict:
+    return {
+        "type": "Feature",
+        "geometry": message['polygon'],
+        "id": message['intersection_id'],
+        "properties": {
+            "name": message['name'],
+            "antimeridian_crossing": message['antimeridian_crossing'],
+            "edited_polygon_id": message['editing_polygon_id'],
+            "intersection_polygon_ids": message['intersection_polygon_ids']
+        }
+    }
+
+
+def check_message_errors(message, callback_type) -> bool:
     if message['error']:
         send_message_to_all(PolygonChannelMessage(
-            type=PolygonChannelMessage.Types.new_polygon_status,
+            type=callback_type,
             uuid=message['request_uuid'],
             status=PolygonChannelMessage.Statuses.error_intersections_check
         ))
-        return message
+        return False
     if message['intersection_polygon_ids']:
-        geojson = {
-            "type": "Feature",
-            "geometry": message['polygon'],
-            "id": message['intersection_id'],
-            "properties": {
-                "name": message['name'],
-                "antimeridian_crossing": message['antimeridian_crossing'],
-                "edited_polygon_id": message['editing_polygon_id'],
-                "intersection_polygon_ids": message['intersection_polygon_ids']
-            }
-        }
+        geojson = geojson_from_message(message)
         send_message_to_all(PolygonChannelMessage(
-            type=PolygonChannelMessage.Types.new_polygon_status,
+            type=callback_type,
             uuid=message['request_uuid'],
             status=PolygonChannelMessage.Statuses.error_intersections_exist,
             intersection_polygon_ids=message['intersection_polygon_ids'],
             polygon_intersection=geojson
         ))
+        return False
+    return True
+
+
+def process_new_polygon(message):
+    status = check_message_errors(message, PolygonChannelMessage.Types.new_polygon_status)
+    if not status:
         return message
     polygon_dump = ujson.dumps(message['polygon'])
     p = Polygon(name=message['name'], polygon=polygon_dump, antimeridian_crossing=message['antimeridian_crossing'])
@@ -132,20 +143,8 @@ def process_new_polygon(message):
 
 
 def process_editing_polygon(message):
-    if message['error']:
-        send_message_to_all(PolygonChannelMessage(
-            type=PolygonChannelMessage.Types.edit_polygon_status,
-            uuid=message['request_uuid'],
-            status=PolygonChannelMessage.Statuses.error_intersections_check
-        ))
-        return message
-    if message['intersection_polygon_ids']:
-        send_message_to_all(PolygonChannelMessage(
-            type=PolygonChannelMessage.Types.edit_polygon_status,
-            uuid=message['request_uuid'],
-            status=PolygonChannelMessage.Statuses.error_intersections_exist,
-            intersection_polygon_ids=message['intersection_polygon_ids'],
-        ))
+    status = check_message_errors(message, PolygonChannelMessage.Types.edit_polygon_status)
+    if not status:
         return message
     polygon_dump = ujson.dumps(message['polygon'])
     p = Polygon.objects.get(pk=message['editing_polygon_id'])
