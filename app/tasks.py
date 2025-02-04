@@ -35,7 +35,7 @@ def wrap_coordinates(coords) -> WrapCoordinatesRet:
         if not antimeridian_crossing and lon != new_lon:
             antimeridian_crossing = True
         ret.append([lon, lat])
-    return NormalizePolygonRet(
+    return WrapCoordinatesRet(
         coordinates=ret,
         antimeridian_crossing=antimeridian_crossing
     )
