@@ -1,5 +1,7 @@
 .env
+.git
 .idea
 .vscode
 .venv
+README.md
 **__pycache__
