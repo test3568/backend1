@@ -1,5 +1,5 @@
 import ujson
-from confluent_kafka import Consumer, TopicPartition
+from confluent_kafka import Consumer, TopicPartition, KafkaError
 from django.conf import settings
 from django.db import transaction
 
@@ -29,8 +29,11 @@ def consume_messages():
             if msg is None:
                 continue
 
-            if msg.error():
-                logger.error(f"Kafka poll error: {msg.error()}")
+            error = msg.error()
+            if error:
+                logger.error(f"Kafka poll error: {error}")
+                if error.code() == KafkaError.NOT_COORDINATOR:
+                    logger.warning(f"NOT_COORDINATOR error code, exiting")
                 continue
 
             # noinspection PyArgumentList
