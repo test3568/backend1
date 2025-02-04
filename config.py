@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     KAFKA_PRODUCER_TOPIC: str
 
     CORS_ORIGIN_WHITELIST: list[str]
+    CSRF_TRUSTED_ORIGINS: list[str]
 
     DJANGO_LOG_LEVEL: str
     APP_LOG_LEVEL: str

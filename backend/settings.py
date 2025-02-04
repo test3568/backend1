@@ -9,6 +9,7 @@ SECRET_KEY = Config.DJANGO_SECRET_KEY
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_WHITELIST = Config.CORS_ORIGIN_WHITELIST
+CSRF_TRUSTED_ORIGINS = Config.CSRF_TRUSTED_ORIGINS
 
 INSTALLED_APPS = [
     'daphne',
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
