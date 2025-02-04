@@ -1,10 +1,15 @@
 ## Local Setup
 
-### 1. Follow steps for basic docker compose setup in `stack` repository
+### 1. Update submodule
+```shell
+git submodule update --init --remote
+```
 
-### 2. Install GDAL, GEOS: https://docs.djangoproject.com/en/5.1/ref/contrib/gis/install/geolibs/
+### 2. Follow steps for basic docker compose setup in `stack` repository
 
-### 3. Create `.env` file. Working example for docker-compose local deploy (replace GDAL_LIBRARY_PATH and GEOS_LIBRARY_PATH):
+### 3. Install GDAL, GEOS: https://docs.djangoproject.com/en/5.1/ref/contrib/gis/install/geolibs/
+
+### 4. Create `.env` file. Working example for docker-compose local deploy (replace GDAL_LIBRARY_PATH and GEOS_LIBRARY_PATH):
 ```dotenv
 DJANGO_SECRET_KEY=eJWuyaUEO7W8SmiAR2AYmzmosHT25zTyRRx2sz8JA0buWvqppUHjVuFfESF9Vw4h
 DJANGO_DEBUG=true
@@ -29,7 +34,7 @@ DJANGO_LOG_LEVEL=INFO
 APP_LOG_LEVEL=DEBUG
 ```
 
-### 4. Install python dependencies
+### 5. Install python dependencies
 ```shell
 pip install -r requirements.txt
 ```
