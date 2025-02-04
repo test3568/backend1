@@ -157,8 +157,12 @@ class IntersectionsViewSet(generics.GenericAPIView):
         return JsonResponse(serializer.data)
 
 
+class EmptySerializer(serializers.Serializer):
+    pass
+
+
 class HealthCheckViewSet(generics.GenericAPIView):
-    serializer_class = None
+    serializer_class = EmptySerializer
 
     @extend_schema(
         description='Healthcheck route that just returns code 200'
